@@ -25,7 +25,7 @@ def mdiff(debugger, command, result, internal_dict):
     contents1 = res1.GetOutput()
     contents2 = res2.GetOutput()
 
-    diff = difflib.unified_diff(contents1.split('\n'), contents2.split('\n'))
+    diff = difflib.unified_diff(contents1.splitlines(True), contents2.splitlines(True))
     contents = '\n'.join(diff)
 
     result.AppendMessage(contents)
