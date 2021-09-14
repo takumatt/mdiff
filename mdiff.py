@@ -32,7 +32,7 @@ def mdiff(debugger, command, result, internal_dict):
     diff_lines = list(difflib.unified_diff(contents1.splitlines(True), contents2.splitlines(True), n=context_line_number))
 
     if not plain:
-        diff_lines = remove_unchanged_lines(diff_linesv)
+        diff_lines = replace_prefixes_with_emojis(diff_linesv)
     
     contents = ''.join(diff_lines)
 
@@ -48,9 +48,9 @@ def exec_expression_o(debugger, command):
 
     return res
 
-def remove_unchanged_lines(lines):
+def replace_prefixes_with_emojis(lines):
 
-    def remove_unchanged_line(line):
+    def replace_with_emoji(line):
         prefix = line[0]
         if prefix == '+':
             return '➕' + line[1:]
@@ -59,4 +59,4 @@ def remove_unchanged_lines(lines):
         else:
             return line
         
-    return lines[0:2] + list(map(remove_unchanged_line, lines[3:]))
+    return lines[0:2] + list(map(replace_with_emoji, lines[3:]))
