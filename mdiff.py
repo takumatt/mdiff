@@ -9,6 +9,10 @@ def __lldb_init_module(debugger, internal_dict):
 
 def mdiff(debugger, command, result, internal_dict):
 
+    # TODO: flag
+    context_line_number = 0
+    plain = False
+
     commands = command.split()
 
     res1 = exec_expression_o(debugger, commands[0])
@@ -25,8 +29,12 @@ def mdiff(debugger, command, result, internal_dict):
     contents1 = res1.GetOutput()
     contents2 = res2.GetOutput()
 
-    diff = difflib.unified_diff(contents1.splitlines(True), contents2.splitlines(True))
-    contents = '\n'.join(diff)
+    diff_lines = list(difflib.unified_diff(contents1.splitlines(True), contents2.splitlines(True), n=context_line_number))
+
+    if not plain:
+        diff_lines = remove_unchanged_lines(diff_linesv)
+    
+    contents = ''.join(diff_lines)
 
     result.AppendMessage(contents)
 
@@ -39,3 +47,16 @@ def exec_expression_o(debugger, command):
     interpreter.HandleCommand('po ' + command, res)
 
     return res
+
+def remove_unchanged_lines(lines):
+
+    def remove_unchanged_line(line):
+        prefix = line[0]
+        if prefix == '+':
+            return '➕' + line[1:]
+        elif prefix == '-':
+            return '➖' + line[1:]
+        else:
+            return line
+        
+    return lines[0:2] + list(map(remove_unchanged_line, lines[3:]))
